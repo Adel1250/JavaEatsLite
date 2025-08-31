@@ -1,0 +1,68 @@
+@startuml View Restaurants and Menus
+actor Customer
+participant "Mobile App" as App
+participant "JavaEatsLite Backend" as Backend
+participant "Redis Cache" as Cache
+database "PostgresSQL + PostGIS" as DB
+
+== View Restaurants ==
+Customer -> App: Open App & Share Location
+App -> Backend: Request Nearby Restaurants(location, [optional category])
+
+Backend -> Cache: Check cached restaurants by location+category
+alt Cache Hit
+    Cache --> Backend: Return restaurant list
+else Cache Miss
+    Backend -> DB: Geospatial query (PostGIS) with optional category filter
+    DB --> Backend: Return nearest restaurants (filtered)
+    Backend -> Cache: Store restaurant list in cache
+end
+Backend --> App: Return restaurants
+App --> Customer: Display restaurants with categories
+
+== View Menu Categories ==
+Customer -> App: Select a Restaurant
+App -> Backend: Request Menu Categories(restaurant_id)
+
+Backend -> Cache: Check cached menu categories
+alt Cache Hit
+    Cache --> Backend: Return categories
+else Cache Miss
+    Backend -> DB: Query menu categories
+    DB --> Backend: Return categories
+    Backend -> Cache: Store categories in cache
+end
+Backend --> App: Return categories
+App --> Customer: Display menu categories
+
+== View Menu Items ==
+Customer -> App: Select a Menu Category
+App -> Backend: Request Menu Items(category_id)
+
+Backend -> Cache: Check cached menu items
+alt Cache Hit
+    Cache --> Backend: Return menu items
+else Cache Miss
+    Backend -> DB: Query menu items
+    DB --> Backend: Return menu items
+    Backend -> Cache: Store menu items in cache
+end
+Backend --> App: Return menu items
+App --> Customer: Display menu items
+
+== View Ingredients ==
+Customer -> App: Select a Menu Item
+App -> Backend: Request Ingredients(menu_item_id)
+
+Backend -> Cache: Check cached ingredients
+alt Cache Hit
+    Cache --> Backend: Return ingredients
+else Cache Miss
+    Backend -> DB: Query ingredients
+    DB --> Backend: Return ingredients
+    Backend -> Cache: Store ingredients in cache
+end
+Backend --> App: Return ingredients
+App --> Customer: Display ingredients
+
+@enduml

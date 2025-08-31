@@ -1,0 +1,85 @@
+@startuml View Restaurants and Menus
+!theme plain
+
+entity restaurant {
+    *id : UUID
+    --
+    name : string
+    location : geometry
+}
+
+entity restaurant_category {
+    *id : UUID
+    --
+    name : string
+}
+
+entity restaurant_details {
+    *id : UUID
+    --
+    restaurant_id : UUID
+    address : string
+    phone : string
+    opening_hours : string
+}
+
+entity menu {
+    *id : UUID
+    --
+    restaurant_id : UUID
+    name : string
+}
+
+entity menu_category {
+    *id : UUID
+    --
+    name : string
+    menu_id : UUID
+}
+
+entity menu_item {
+    *id : UUID
+    --
+    name : string
+    price : decimal
+    category_id : UUID
+}
+
+entity ingredient {
+    *id : UUID
+    --
+    name : string
+    menu_item_id : UUID
+}
+
+entity review {
+    *id : UUID
+    --
+    restaurant_id : UUID
+    user_id : UUID
+    rating : int
+    comment : text
+}
+
+entity comment {
+    *id : UUID
+    --
+    review_id : UUID
+    user_id : UUID
+    text : text
+}
+
+' ===========================
+' Relationships
+' ===========================
+
+restaurant_category ||--o{ restaurant : belongs_to
+restaurant ||--|| restaurant_details : has_one
+restaurant ||--o{ menu : has
+menu ||--o{ menu_category : has
+menu_category ||--o{ menu_item : has
+menu_item ||--o{ ingredient : contains
+restaurant ||--o{ review : receives
+review ||--o{ comment : has
+
+@enduml

@@ -1,0 +1,48 @@
+View Restaurants and Menu Pseudocode:
+
+function getNearbyRestaurants(userLocation, category=None):
+    cacheKey = "restaurants:" + locationKey(userLocation)
+    if category is not None:
+        cacheKey += ":category:" + category
+
+    restaurants = Cache.get(cacheKey)
+
+    if restaurants is None:
+        // Geospatial lookup (PostGIS) with optional category filter
+        restaurants = DB.fetchNearbyRestaurants(userLocation, category)
+        Cache.set(cacheKey, restaurants, ttl=600)
+
+    return restaurants
+
+
+function getMenuCategories(restaurantId):
+    cacheKey = "categories:" + restaurantId
+    categories = Cache.get(cacheKey)
+
+    if categories is None:
+        categories = DB.fetchMenuCategories(restaurantId)
+        Cache.set(cacheKey, categories, ttl=600)
+
+    return categories
+
+
+function getMenuItems(categoryId):
+    cacheKey = "items:" + categoryId
+    items = Cache.get(cacheKey)
+
+    if items is None:
+        items = DB.fetchMenuItems(categoryId)
+        Cache.set(cacheKey, items, ttl=300)
+
+    return items
+
+
+function getIngredients(menuItemId):
+    cacheKey = "ingredients:" + menuItemId
+    ingredients = Cache.get(cacheKey)
+
+    if ingredients is None:
+        ingredients = DB.fetchIngredients(menuItemId)
+        Cache.set(cacheKey, ingredients, ttl=300)
+
+    return ingredients
