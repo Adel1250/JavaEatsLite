@@ -20,7 +20,8 @@ entity restaurant_details {
     restaurant_id : UUID
     address : string
     phone : string
-    opening_hours : string
+    start_time : timestamp
+    close_time : timestamp
 }
 
 entity menu {
@@ -61,14 +62,6 @@ entity review {
     comment : text
 }
 
-entity comment {
-    *id : UUID
-    --
-    review_id : UUID
-    user_id : UUID
-    text : text
-}
-
 ' ===========================
 ' Relationships
 ' ===========================
@@ -80,6 +73,5 @@ menu ||--o{ menu_category : has
 menu_category ||--o{ menu_item : has
 menu_item ||--o{ ingredient : contains
 restaurant ||--o{ review : receives
-review ||--o{ comment : has
 
 @enduml
