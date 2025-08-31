@@ -19,10 +19,10 @@ A lightweight food delivery application.
 ### Performance Optimization
 
 - **Smart caching**: Redis-based caching system with different TTL strategies
-  - Restaurants: 10-minute cache (600s)
-  - Menu categories: 10-minute cache (600s)
-  - Menu items: 5-minute cache (300s)
-  - Ingredients: 5-minute cache (300s)
+  - Restaurants: 10-minute cache
+  - Menu categories: 10-minute cache
+  - Menu items: 5-minute cache
+  - Ingredients: 5-minute cache
 
 ## 🔧 Technical Architecture
 
@@ -55,13 +55,9 @@ A lightweight food delivery application.
 
 ![ERD](erd/View%20Restaurants%20and%20Menus.png)
 
-**Source Code**: `erd/view-restaurants-menus-erd-code.puml`
-
 ### Sequence Diagram
 
 ![Sequence Diagram](sequence-diagram/View%20Restaurants%20and%20Menus.png)
-
-**Source Code**: `sequence-diagram/view-restaurants-menus-seq-diagram-code.puml`
 
 ### Pseudocode
 
