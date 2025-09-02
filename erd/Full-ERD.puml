@@ -1,0 +1,237 @@
+@startuml Full JavaEatsLite ERD
+
+' ENTITY: CUSTOMER
+entity "customer" as customer {
+  *customer_id : ULID <<PK>>
+  --
+  name : varchar
+  email : varchar
+  phone : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+' ENTITY: USER
+entity "user" as user {
+  *user_id : ULID <<PK>>
+  --
+  username : varchar
+  password_hash : varchar
+  email : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+' ENTITY: ROLE
+entity "role" as role {
+  *role_id : bigint <<PK>>
+  --
+  role_name : varchar
+  description : text
+}
+
+' ENTITY: USER_TYPE
+entity "user_type" as user_type {
+  *user_type_id : bigint <<PK>>
+  --
+  type_name : varchar
+  description : text
+}
+
+' ENTITY: RESTAURANT
+entity "restaurant" as restaurant {
+  *restaurant_id : ULID <<PK>>
+  --
+  name : varchar
+  status : varchar
+  created_at : timestamp
+}
+
+' ENTITY: RESTAURANT_DETAILS
+entity "restaurant_details" as restaurant_details {
+  *restaurant_details_id : bigint <<PK>>
+  --
+  restaurant_id : ULID <<FK>>
+  address : varchar
+  phone : varchar
+  description : text
+}
+
+' ENTITY: MENU
+entity "menu" as menu {
+  *menu_id : ULID <<PK>>
+  --
+  restaurant_id : ULID <<FK>>
+  name : varchar
+  created_at : timestamp
+}
+
+' ENTITY: MENU_ITEM
+entity "menu_item" as menu_item {
+  *menu_item_id : ULID <<PK>>
+  --
+  menu_id : ULID <<FK>>
+  name : varchar
+  description : text
+  price : decimal
+  available : boolean
+}
+
+' ENTITY: CART
+entity "cart" as cart {
+    *cart_id : bigint <<PK>>
+    --
+    customer_id : ULID <<FK>>
+    status : varchar
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+' ENTITY: CART_ITEM
+entity "cart_item" as cart_item {
+    *cart_item_id : bigint <<PK>>
+    --
+    cart_id : bigint <<FK>>
+    menu_item_id : ULID <<FK>>
+    quantity : int
+    price : decimal
+}
+
+' ENTITY: ORDER
+entity "order" as order {
+  *order_id : ULID <<PK>>
+  --
+  customer_id : ULID <<FK>>
+  restaurant_id : ULID <<FK>>
+  total_amount : decimal
+  status_id : bigint <<FK>>
+  created_at : timestamp
+}
+
+' ENTITY: ORDER_ITEM
+entity "order_item" as order_item {
+  *order_item_id : ULID <<PK>>
+  --
+  order_id : ULID <<FK>>
+  menu_item_id : ULID <<FK>>
+  quantity : int
+  price : decimal
+}
+
+' ENTITY: ORDER_STATUS
+entity "order_status" as order_status {
+  *status_id : bigint <<PK>>
+  --
+  name : varchar
+  description : text
+}
+
+' ENTITY: ADDRESS
+entity "address" as address {
+  *address_id : bigint <<PK>>
+  --
+  customer_id : ULID <<FK>>
+  street : varchar
+  city : varchar
+  country : varchar
+  postal_code : varchar
+}
+
+' ENTITY: PREFERRED_PAYMENT_SETTING
+entity "preferred_payment_setting" as preferred_payment_setting {
+  *preferred_payment_id : ULID <<PK>>
+  --
+  customer_id : ULID <<FK>>
+  payment_type_id : ULID <<FK>>
+  config_id : ULID <<FK>>
+}
+
+' ENTITY: TRANSACTION
+entity "transaction" as transaction {
+  *transaction_id : ULID <<PK>>
+  --
+  order_id : ULID <<FK>>
+  amount : decimal
+  payment_status_id : ULID <<FK>>
+  created_at : timestamp
+}
+
+' ENTITY: TRANSACTION_DETAILS
+entity "transaction_details" as transaction_details {
+  *transaction_details_id : ULID <<PK>>
+  --
+  transaction_id : ULID <<FK>>
+  provider_reference : varchar
+  raw_response : text
+}
+
+' ENTITY: PAYMENT_INTEGRATION_TYPE
+entity "payment_integration_type" as payment_integration_type {
+  *payment_type_id : ULID <<PK>>
+  --
+  name : varchar
+  description : text
+}
+
+' ENTITY: PAYMENT_INTEGRATION_CONFIGURATION
+entity "payment_integration_configuration" as payment_integration_configuration {
+  *payment_config_id : ULID <<PK>>
+  --
+  payment_type_id : ULID <<FK>>
+  config_key : varchar
+  config_value : varchar
+}
+
+' ENTITY: PAYMENT_STATUS
+entity "payment_status" as payment_status {
+  *payment_status_id : ULID <<PK>>
+  --
+  name : varchar
+  description : text
+}
+
+' ENTITY: AUDITING
+entity "auditing" as auditing {
+  *audit_id : ULID <<PK>>
+  --
+  entity_name : varchar
+  entity_id : varchar
+  action : varchar
+  performed_by : ULID
+  performed_at : timestamp
+}
+
+' -------------------
+' RELATIONSHIPS
+' -------------------
+
+user }o--|| role
+user }o--|| user_type
+
+restaurant ||--o{ restaurant_details
+restaurant ||--o{ menu
+menu ||--o{ menu_item
+
+customer ||--o{ cart
+cart ||--o{ cart_item
+cart_item }o--|| menu_item
+
+customer ||--o{ order
+restaurant ||--o{ order
+order ||--o{ order_item
+order_item }o--|| menu_item
+order }o--|| order_status
+
+customer ||--o{ address
+
+customer ||--o{ preferred_payment_setting
+preferred_payment_setting }o--|| payment_integration_type
+preferred_payment_setting }o--|| payment_integration_configuration
+
+order ||--o{ transaction
+transaction ||--o{ transaction_details
+transaction }o--|| payment_status
+
+auditing }o--|| user
+
+@enduml
