@@ -1,4 +1,4 @@
-@startuml Food Delivery ERD (BaseEntity Flattened)
+@startuml JavaEatsLite ERD
 !theme plain
 
 ' ======================
