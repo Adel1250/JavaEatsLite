@@ -1,216 +1,439 @@
-@startuml Full JavaEatsLite ERD
+@startuml Food Delivery ERD (BaseEntity Flattened)
+!theme plain
 
-' ENTITY: CUSTOMER
-entity "customer" as customer {
-  *customer_id : ULID <<PK>>
-  --
-  name : varchar
-  email : varchar
-  phone : varchar
-  created_at : timestamp
-  updated_at : timestamp
+' ======================
+' CORE ENTITIES
+' ======================
+
+entity user {
+    *user_id : ULID <<PK>>
+    --
+    role_id : bigint <<FK>>
+    username : varchar
+    password_hash : varchar
+    email : varchar
+    last_login_at : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: USER
-entity "user" as user {
-  *user_id : ULID <<PK>>
-  --
-  username : varchar
-  password_hash : varchar
-  email : varchar
-  created_at : timestamp
-  updated_at : timestamp
+entity role {
+    *role_id : bigint <<PK>>
+    --
+    role_name : varchar
+    description : text
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: ROLE
-entity "role" as role {
-  *role_id : bigint <<PK>>
-  --
-  role_name : varchar
-  description : text
+entity device {
+    *device_id : UUID <<PK>>
+    --
+    user_id : ULID <<FK>>
+    device_type : varchar
+    os : varchar
+    app_version : varchar
+    status : varchar
+    last_active_at : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: USER_TYPE
-entity "user_type" as user_type {
-  *user_type_id : bigint <<PK>>
-  --
-  type_name : varchar
-  description : text
+entity customer {
+    *customer_id : ULID <<PK>>
+    --
+    user_id : ULID <<FK>>
+    name : varchar
+    email : varchar
+    phone : varchar
+    device_id : UUID <<FK>>
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: RESTAURANT
-entity "restaurant" as restaurant {
-  *restaurant_id : ULID <<PK>>
-  --
-  name : varchar
-  status : varchar
-  created_at : timestamp
+' ======================
+' RESTAURANT & MENU
+' ======================
+
+entity restaurant_category {
+    *restaurant_category_id : ULID <<PK>>
+    --
+    name : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: RESTAURANT_DETAILS
-entity "restaurant_details" as restaurant_details {
-  *restaurant_details_id : bigint <<PK>>
-  --
-  restaurant_id : ULID <<FK>>
-  address : varchar
-  phone : varchar
-  description : text
+entity restaurant {
+    *restaurant_id : ULID <<PK>>
+    --
+    restaurant_category_id : ULID <<FK>>
+    name : varchar
+    location : geometry
+    status : varchar
+    address : varchar
+    phone : varchar
+    description : text
+    start_time : timestamp
+    close_time : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: MENU
-entity "menu" as menu {
-  *menu_id : ULID <<PK>>
-  --
-  restaurant_id : ULID <<FK>>
-  name : varchar
-  created_at : timestamp
+entity menu {
+    *menu_id : ULID <<PK>>
+    --
+    restaurant_id : ULID <<FK>>
+    name : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: MENU_ITEM
-entity "menu_item" as menu_item {
-  *menu_item_id : ULID <<PK>>
-  --
-  menu_id : ULID <<FK>>
-  name : varchar
-  description : text
-  price : decimal
-  available : boolean
+entity menu_category {
+    *menu_category_id : ULID <<PK>>
+    --
+    menu_id : ULID <<FK>>
+    name : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: CART
-entity "cart" as cart {
+entity menu_item {
+    *menu_item_id : ULID <<PK>>
+    --
+    menu_id : ULID <<FK>>
+    menu_category_id : ULID <<FK>>
+    name : varchar
+    description : text
+    price : decimal
+    available : boolean
+    image_url : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
+}
+
+entity ingredient {
+    *ingredient_id : ULID <<PK>>
+    --
+    menu_item_id : ULID <<FK>>
+    name : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
+}
+
+entity review {
+    *review_id : ULID <<PK>>
+    --
+    restaurant_id : ULID <<FK>>
+    customer_id : ULID <<FK>>
+    rating : int
+    comment : text
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
+}
+
+' ======================
+' CART MANAGEMENT
+' ======================
+
+entity cart {
     *cart_id : bigint <<PK>>
     --
     customer_id : ULID <<FK>>
     status : varchar
     created_at : timestamp
     updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: CART_ITEM
-entity "cart_item" as cart_item {
+entity cart_item {
     *cart_item_id : bigint <<PK>>
     --
     cart_id : bigint <<FK>>
     menu_item_id : ULID <<FK>>
     quantity : int
     price : decimal
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: ORDER
+' ======================
+' ORDER MANAGEMENT
+' ======================
+
 entity "order" as order {
-  *order_id : ULID <<PK>>
-  --
-  customer_id : ULID <<FK>>
-  restaurant_id : ULID <<FK>>
-  total_amount : decimal
-  status_id : bigint <<FK>>
-  created_at : timestamp
+    *order_id : ULID <<PK>>
+    --
+    customer_id : ULID <<FK>>
+    restaurant_id : ULID <<FK>>
+    total_amount : decimal
+    status_id : bigint <<FK>>
+    customer_name : varchar
+    restaurant_name : varchar
+    payment_method_snapshot : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: ORDER_ITEM
-entity "order_item" as order_item {
-  *order_item_id : ULID <<PK>>
-  --
-  order_id : ULID <<FK>>
-  menu_item_id : ULID <<FK>>
-  quantity : int
-  price : decimal
+entity order_item {
+    *order_item_id : ULID <<PK>>
+    --
+    order_id : ULID <<FK>>
+    menu_item_id : ULID <<FK>>
+    quantity : int
+    price : decimal
+    menu_item_name : varchar
+    menu_item_price : decimal
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: ORDER_STATUS
-entity "order_status" as order_status {
-  *status_id : bigint <<PK>>
-  --
-  name : varchar
-  description : text
+entity order_status {
+    *status_id : bigint <<PK>>
+    --
+    name : varchar
+    description : text
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: ADDRESS
-entity "address" as address {
-  *address_id : bigint <<PK>>
-  --
-  customer_id : ULID <<FK>>
-  street : varchar
-  city : varchar
-  country : varchar
-  postal_code : varchar
+' ======================
+' ADDRESSES
+' ======================
+
+entity address {
+    *address_id : ULID <<PK>>
+    --
+    customer_id : ULID <<FK>>
+    address_line1 : varchar
+    address_line2 : varchar
+    location : geometry
+    city : varchar
+    state : varchar
+    postal_code : varchar
+    country : varchar
+    is_default : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: PREFERRED_PAYMENT_SETTING
-entity "preferred_payment_setting" as preferred_payment_setting {
-  *preferred_payment_id : ULID <<PK>>
-  --
-  customer_id : ULID <<FK>>
-  payment_type_id : ULID <<FK>>
-  config_id : ULID <<FK>>
+' ======================
+' PAYMENTS (SECURED)
+' ======================
+
+entity preferred_payment_setting {
+    *preferred_payment_id : ULID <<PK>>
+    --
+    customer_id : ULID <<FK>>
+    payment_type_id : ULID <<FK>>
+    payment_config_id : ULID <<FK>>
+    alias : varchar
+    token_id : varchar
+    is_default : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: TRANSACTION
-entity "transaction" as transaction {
-  *transaction_id : ULID <<PK>>
-  --
-  order_id : ULID <<FK>>
-  amount : decimal
-  payment_status_id : ULID <<FK>>
-  created_at : timestamp
+entity transaction {
+    *transaction_id : ULID <<PK>>
+    --
+    order_id : ULID <<FK>>
+    customer_id : ULID <<FK>>
+    amount : decimal
+    payment_status_id : ULID <<FK>>
+    provider_reference : varchar
+    raw_request : jsonb
+    raw_response : jsonb
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: TRANSACTION_DETAILS
-entity "transaction_details" as transaction_details {
-  *transaction_details_id : ULID <<PK>>
-  --
-  transaction_id : ULID <<FK>>
-  provider_reference : varchar
-  raw_response : text
+entity payment_integration_type {
+    *payment_type_id : ULID <<PK>>
+    --
+    name : varchar
+    provider : varchar
+    supports_tokenization : boolean
+    description : text
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: PAYMENT_INTEGRATION_TYPE
-entity "payment_integration_type" as payment_integration_type {
-  *payment_type_id : ULID <<PK>>
-  --
-  name : varchar
-  description : text
+entity payment_integration_configuration {
+    *payment_config_id : ULID <<PK>>
+    --
+    payment_type_id : ULID <<FK>>
+    merchant_id : varchar
+    api_key_enc : varchar
+    secret_key_enc : varchar
+    terminal_id : varchar
+    region : varchar
+    active : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: PAYMENT_INTEGRATION_CONFIGURATION
-entity "payment_integration_configuration" as payment_integration_configuration {
-  *payment_config_id : ULID <<PK>>
-  --
-  payment_type_id : ULID <<FK>>
-  config_key : varchar
-  config_value : varchar
+entity payment_status {
+    *payment_status_id : ULID <<PK>>
+    --
+    name : varchar
+    description : text
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: PAYMENT_STATUS
-entity "payment_status" as payment_status {
-  *payment_status_id : ULID <<PK>>
-  --
-  name : varchar
-  description : text
+' ======================
+' AUDITING
+' ======================
+
+entity auditing {
+    *audit_id : ULID <<PK>>
+    --
+    entity_type : varchar
+    entity_id : ULID
+    transaction_id : ULID <<FK>>
+    user_id : ULID <<FK>>
+    action : varchar
+    previous_state : varchar
+    new_state : varchar
+    provider_request : jsonb
+    provider_response : jsonb
+    details : jsonb
+    device_id : UUID <<FK>>
+    ip_address : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    created_by : ULID <<FK>>
+    updated_by : ULID <<FK>>
+    is_active : boolean
+    deleted_at : timestamp
+    deleted_by : ULID <<FK>>
 }
 
-' ENTITY: AUDITING
-entity "auditing" as auditing {
-  *audit_id : ULID <<PK>>
-  --
-  entity_name : varchar
-  entity_id : varchar
-  action : varchar
-  performed_by : ULID
-  performed_at : timestamp
-}
-
-' -------------------
+' ======================
 ' RELATIONSHIPS
-' -------------------
+' ======================
 
-user }o--|| role
-user }o--|| user_type
+role ||--o{ user
+user ||--o{ device
 
-restaurant ||--o{ restaurant_details
+user ||--o{ customer
+restaurant_category ||--o{ restaurant
 restaurant ||--o{ menu
+menu ||--o{ menu_category
 menu ||--o{ menu_item
+menu_category ||--o{ menu_item
+menu_item ||--o{ ingredient
+restaurant ||--o{ review
+customer ||--o{ review
 
 customer ||--o{ cart
 cart ||--o{ cart_item
@@ -229,9 +452,10 @@ preferred_payment_setting }o--|| payment_integration_type
 preferred_payment_setting }o--|| payment_integration_configuration
 
 order ||--o{ transaction
-transaction ||--o{ transaction_details
 transaction }o--|| payment_status
 
 auditing }o--|| user
+auditing }o--|| device
+auditing }o--|| transaction
 
 @enduml
