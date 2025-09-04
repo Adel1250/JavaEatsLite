@@ -329,6 +329,7 @@ entity transaction {
     customer_id : ULID <<FK>>
     amount : decimal
     payment_status_id : ULID <<FK>>
+    payment_type_id : ULID <<FK>>
     provider_reference : varchar
     raw_request : jsonb
     raw_response : jsonb
@@ -453,6 +454,7 @@ preferred_payment_setting }o--|| payment_integration_configuration
 
 order ||--o{ transaction
 transaction }o--|| payment_status
+transaction }o--|| payment_integration_type
 
 auditing }o--|| user
 auditing }o--|| device
